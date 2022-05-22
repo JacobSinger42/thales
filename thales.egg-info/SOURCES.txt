@@ -1,0 +1,8 @@
+setup.py
+thales/__init__.py
+thales/core.py
+thales.egg-info/PKG-INFO
+thales.egg-info/SOURCES.txt
+thales.egg-info/dependency_links.txt
+thales.egg-info/requires.txt
+thales.egg-info/top_level.txt
