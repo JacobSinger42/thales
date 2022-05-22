@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.1' 
+VERSION = '0.1.1' 
 DESCRIPTION = 'Thales Graphing Library'
-LONG_DESCRIPTION = 'A library for Cartesian graphing using PyGame'
+LONG_DESCRIPTION = 'A library for Cartesian graphing using PyGame. See the source code at https://github.com/JacobSinger42/thales.'
 
 # Setting up
 setup(
