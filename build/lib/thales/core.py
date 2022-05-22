@@ -4,6 +4,7 @@ import sympy as sym
 from pygame.locals import * 
 
 class Grid: 
+    # The core class for Thales, containing the methods for displaying the grid and performing pixel-grid coordinate conversions 
     def __init__(self, surface, center, cDims, sDims, cColor=(0,0,0), aColor=(0,0,0), cWidth=2, aWidth=4): 
         """
         Params: 
@@ -61,6 +62,12 @@ class Grid:
         pygame.draw.line(self.surface, self.aColor, (0, self.center[1]), (self.sDims[0], self.center[1]), self.aWidth) 
     
     def pan(self, event, button=3, resetButton=None):
+        """
+        Params: 
+        event: a pygame.event object
+        button: the ID of the mouse button to use to pan 
+        resetButton: the key that restores the origin to its initial position 
+        """
         if event.type == MOUSEMOTION and self.panning: 
             sf=6
             dx, dy = (event.pos[0] - self.panX)/sf, (event.pos[1] - self.panY)/sf
@@ -76,7 +83,13 @@ class Grid:
                 self.cDims = self.ogCDims 
 
     def zoom(self, event, inButton=4, outButton=5): 
-        sf = 1.25 
+        """
+        Params: 
+        event: a pygame.event object 
+        inButton: the ID of the mouse button to zoom inwards 
+        outButton: the ID of the mouse button to zoom outwards 
+        """
+        sf = 1.25 # the zoom scaling factor 
         if event.type == MOUSEBUTTONDOWN: 
             centerDist = (event.pos[0] - self.center[0], event.pos[1] - self.center[1])
             if event.button == inButton: 
@@ -87,6 +100,7 @@ class Grid:
                 self.center = (event.pos[0] - centerDist[0] / sf, event.pos[1] - centerDist[1] / sf) 
 
 class Point: 
+    # the class used to create a simple point object
     def __init__(self, surface, grid, coords, radius=10, fColor=(0,0,0), oColor=None, oWidth=4): 
         """
         surface: the Pygame surface object on which the grid is displayed 
@@ -105,10 +119,11 @@ class Point:
         if (not self.oColor): self.oColor = self.fColor
 
     def move(self, x, y): 
-        # change the center of the pixel to the grid coordinates provided
+        # change the center of the pixel by the grid coordinates provided
         self.coords = (self.coords[0] + x, self.coords[1] + y)  
 
     def pos(self, x, y): 
+        # set the position of the point to the grid coordinates provided 
         self.coords = x, y 
 
     def draw(self): 
@@ -116,6 +131,13 @@ class Point:
         pygame.draw.circle(self.surface, self.fColor, (self.grid.pixel(self.coords[0], self.coords[1])), self.radius - self.oWidth) 
 
     def checkDrag(self, event, drag=False, button=1):
+        """
+        Allows for point interactivity. Returns true when the point is pressed, and can also support dragging 
+        Params: 
+        event: a pygame.event object 
+        drag: a boolean; whether the point should be draggable when it is pressed 
+        button: which mouse button to provide point interactivity with 
+        """
         if event.type == MOUSEMOTION and self.dragging: 
             self.coords = self.grid.grid(*event.pos)
             return True 
@@ -128,6 +150,13 @@ class Point:
             self.dragging = False 
 
     def getDist(self, p, tuple=False, useAbs=False):
+        """
+        Returns the distance between this point and another 
+        Params: 
+        p: the point being this one is being compared to 
+        tuple: a boolean; if true, returns a tuple <x,y> with the offset values; if false, returns the magnitude of the  offset vector 
+        useAbs: if tuple is true, whether or not to return the absolute  values of the offset values 
+        """
         dx, dy = self.coords[0] - p.coords[0], self.coords[1] - p.coords[1]
         if tuple: 
             return (abs(dx), abs(dy)) if useAbs else (dx, dy) 
@@ -136,7 +165,7 @@ class Point:
               
 
 class Funct: 
-    # add support for implicit relations 
+    # The class for the creation of standard y = f(x) functions using lambda expressions 
 
     def __init__(self, surface, grid, f, inp=None, width=6, color=(255,0,0)): 
         """
@@ -159,7 +188,7 @@ class Funct:
 
     def get(self, x): 
         # returns the value of the function at the grid input 
-        # Switch to .subs(sx, x?)
+        # Switch to .subs(sx, x?)   
         try: 
             return self.f(x).evalf() 
         except AttributeError: 
