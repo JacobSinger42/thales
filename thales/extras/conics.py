@@ -5,6 +5,8 @@ from pygame.locals import *
 
 # TODO: Add ICircle, IEllipse, IParabola, IHyperbola (interactive versions)    
 # TODO: Make Polymorphic and simpler by adding a parent Conic class (create find dx/dy method, then another method to automate point drawing) 
+# TODO: Add support for obliquely-oriented conics 
+# TODO: Add width parameters 
 
 class Circle: 
     def __init__(self, surface, g, c, r, color=(255,0,0), showCenter=False): 
@@ -39,10 +41,31 @@ class Ellipse:
             th.Point(self.surface, self.g, self.c, fColor=(255,255,255), oColor=self.color).draw() 
 
 class Parabola: 
-    ...
+    # TODO: Add choice of orientation ('h' or 'v' for dir) 
+    def __init__(self, surface, g, v, a, color=(255,0,0), dir='h', showVertex=False): 
+        self.surface, self.g, self.v, self.a, self.color, self.dir, self.showVertex = surface, g, v, a, color, dir, showVertex 
+
+    def draw(self): 
+        if (self.dir == 'h'): 
+            b1, b2 = self.v[0], self.g.gx(0 if self.a<0 else self.g.sDims[0])  
+            for x in range (self.g.px(min(b1,b2)), self.g.px(max(b1,b2))): 
+                dy = math.sqrt((self.g.gx(x)-self.v[0])/self.a)
+                th.Point(self.surface, self.g, (self.g.gx(x), self.v[1] + dy), radius=5, fColor=self.color).draw() 
+                th.Point(self.surface, self.g, (self.g.gx(x), self.v[1] - dy), radius=5, fColor=self.color).draw()
+        else: 
+            b1, b2 = self.v[1], self.g.gy(0 if self.a>0 else self.g.sDims[1]) 
+            for y in range (self.g.py(max(b1,b2)), self.g.py(min(b1,b2))): 
+                dx = math.sqrt((self.g.gy(y)-self.v[1])/self.a) 
+                th.Point(self.surface, self.g, (self.v[0] - dx, self.g.gy(y)), radius=5, fColor=self.color).draw() 
+                th.Point(self.surface, self.g, (self.v[0] + dx, self.g.gy(y)), radius=5, fColor=self.color).draw()
+        
 
 class Hyperbola: 
-    ...
+    def __init__(self, surface, g, c, a, b, color=(255,0,0), dir='h', showCenter=False): 
+        self.surface, self.g, self.c, self.a, self.b, self.color, self.dir, self.showCenter = surface, g, c, a, b, color, dir, showCenter
+
+    def draw(self): 
+        ...
     
 if __name__ == '__main__': 
     pygame.init() 
@@ -55,6 +78,7 @@ if __name__ == '__main__':
 
     c = Circle(surface, g, (0,0), 5)
     e = Ellipse(surface, g, (0, 0), 2, 5) 
+    p = Parabola(surface, g, (0,0), 2, dir='v') 
 
     while True: 
         for event in pygame.event.get(): 
@@ -65,7 +89,8 @@ if __name__ == '__main__':
         surface.fill((255,255,255)) 
 
         g.draw() 
-        c.draw() 
-        e.draw() 
+        #c.draw() 
+        #e.draw() 
+        #p.draw() 
 
         pygame.display.update() 
