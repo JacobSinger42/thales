@@ -8,3 +8,6 @@ thales.egg-info/SOURCES.txt
 thales.egg-info/dependency_links.txt
 thales.egg-info/requires.txt
 thales.egg-info/top_level.txt
+thales/extras/__init__.py
+thales/extras/conics.py
+thales/extras/slopeField.py

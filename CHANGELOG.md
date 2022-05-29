@@ -1,6 +1,9 @@
 # Thales Change Log 
 
-## Current Version: 0.1.2 
+## Current Version: 0.2 
+
+# 0.2 
+* Added the extras submodule, including classes for generating conic graphs and slope fields 
 
 ## 0.1.2 
 * Added additional documentation to the core class and a changelog file 
