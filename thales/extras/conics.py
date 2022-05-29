@@ -3,7 +3,8 @@ import thales as th
 import pygame 
 from pygame.locals import *
 
-# TODO: Add ICircle, IEllipse, IParabola, IHyperbola (interactive versions)    
+# TODO: Add ICircle, IEllipse, IParabola, IHyperbola (interactive versions)   
+# TODO: Add GCircle, GEllipse, GParabola, GHyperbola (Geometrically-defined, can be oblique)  
 # TODO: Make Polymorphic and simpler by adding a parent Conic class (create find dx/dy method, then another method to automate point drawing) 
 # TODO: Add support for obliquely-oriented conics 
 # TODO: Add width parameters 
@@ -59,13 +60,21 @@ class Parabola:
                 th.Point(self.surface, self.g, (self.v[0] - dx, self.g.gy(y)), radius=5, fColor=self.color).draw() 
                 th.Point(self.surface, self.g, (self.v[0] + dx, self.g.gy(y)), radius=5, fColor=self.color).draw()
         
-
 class Hyperbola: 
     def __init__(self, surface, g, c, a, b, color=(255,0,0), dir='h', showCenter=False): 
         self.surface, self.g, self.c, self.a, self.b, self.color, self.dir, self.showCenter = surface, g, c, a, b, color, dir, showCenter
 
     def draw(self): 
-        ...
+        if (self.dir == 'h'): 
+            for y in range (0, self.g.sDims[1]): 
+                dx = self.a * math.sqrt(1 + ((self.g.gy(y) - self.c[1])/self.b)**2) 
+                th.Point(self.surface, self.g, (self.c[0] - dx, self.g.gy(y)), radius=5, fColor=self.color).draw() 
+                th.Point(self.surface, self.g, (self.c[0] + dx, self.g.gy(y)), radius=5, fColor=self.color).draw()
+        else: 
+            for x in range (0, self.g.sDims[0]): 
+                dy = self.b * math.sqrt(1 + ((self.g.gx(x) - self.c[0])/self.a)**2) 
+                th.Point(self.surface, self.g, (self.g.gx(x), self.c[1] + dy), radius=5, fColor=self.color).draw() 
+                th.Point(self.surface, self.g, (self.g.gx(x), self.c[1] - dy), radius=5, fColor=self.color).draw()
     
 if __name__ == '__main__': 
     pygame.init() 
@@ -78,7 +87,8 @@ if __name__ == '__main__':
 
     c = Circle(surface, g, (0,0), 5)
     e = Ellipse(surface, g, (0, 0), 2, 5) 
-    p = Parabola(surface, g, (0,0), 2, dir='v') 
+    p = Parabola(surface, g, (0,0), -2, dir='v') 
+    h = Hyperbola(surface, g, (0,0), 1, 1, dir='h') 
 
     while True: 
         for event in pygame.event.get(): 
@@ -89,8 +99,9 @@ if __name__ == '__main__':
         surface.fill((255,255,255)) 
 
         g.draw() 
-        #c.draw() 
-        #e.draw() 
-        #p.draw() 
+        c.draw() 
+        e.draw() 
+        p.draw() 
+        h.draw() 
 
         pygame.display.update() 
