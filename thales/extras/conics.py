@@ -15,11 +15,11 @@ class Circle:
 
     def draw(self): 
         for x in range (self.g.px(self.c[0] - self.r), self.g.px(self.c[0] + self.r)): 
-            dy = math.sqrt(self.r**2 - (self.g.gx(x) - self.c[0])**2) 
+            dy = math.sqrt(abs(self.r**2 - (self.g.gx(x) - self.c[0])**2)) 
             th.Point(self.surface, self.g, (self.g.gx(x), self.c[1] + dy), radius=5, fColor=self.color).draw() 
             th.Point(self.surface, self.g, (self.g.gx(x), self.c[1] - dy), radius=5, fColor=self.color).draw() 
         for y in range (self.g.py(self.c[1] + self.r), self.g.py(self.c[1] - self.r)): 
-            dx = math.sqrt(self.r**2 - (self.g.gy(y) - self.c[1])**2)
+            dx = math.sqrt(abs(self.r**2 - (self.g.gy(y) - self.c[1])**2))
             th.Point(self.surface, self.g, (self.c[0] + dx, self.g.gy(y)), radius=5, fColor=self.color).draw() 
             th.Point(self.surface, self.g, (self.c[0] - dx, self.g.gy(y)), radius=5, fColor=self.color).draw() 
         if self.showCenter: 
@@ -50,13 +50,13 @@ class Parabola:
         if (self.dir == 'h'): 
             b1, b2 = self.v[0], self.g.gx(0) if self.a<0 else self.g.sDims[0] 
             for x in range (self.g.px(min(b1,b2)), self.g.px(max(b1,b2))): 
-                dy = math.sqrt((self.g.gx(x)-self.v[0])/self.a)
+                dy = math.sqrt(abs((self.g.gx(x)-self.v[0])/self.a))
                 th.Point(self.surface, self.g, (self.g.gx(x), self.v[1] + dy), radius=5, fColor=self.color).draw() 
                 th.Point(self.surface, self.g, (self.g.gx(x), self.v[1] - dy), radius=5, fColor=self.color).draw()
         else: 
             b1, b2 = self.v[1], self.g.gy(0) if self.a>0 else self.g.sDims[1]
             for y in range (self.g.py(max(b1,b2)), self.g.py(min(b1,b2))): 
-                dx = math.sqrt((self.g.gy(y)-self.v[1])/self.a) 
+                dx = math.sqrt(abs((self.g.gy(y)-self.v[1])/self.a))
                 th.Point(self.surface, self.g, (self.v[0] - dx, self.g.gy(y)), radius=5, fColor=self.color).draw() 
                 th.Point(self.surface, self.g, (self.v[0] + dx, self.g.gy(y)), radius=5, fColor=self.color).draw()
         

@@ -2,6 +2,9 @@
 
 ## Current Version: 0.2 
 
+## 0.2.2
+* Resolved domain issues for the conics classes 
+
 ## 0.2.1 
 * Resolved namespace issues for the conics classes 
 
