@@ -4,8 +4,8 @@ import math
 from pygame.locals import * 
 
 class SlopeField: 
-    def __init__(self, surface, g, f, color=(0,0,255), gradient=False, vector=False):
-        self.surface, self.g, self.f, self.color = surface, g, f, color 
+    def __init__(self, g, f, color=(0,0,255), gradient=False, vector=False):
+        self.g, self.f, self.color = g, f, color 
         self.gradient, self.vector = gradient, vector
 
     def get_color(self, slope): 
@@ -28,7 +28,7 @@ class SlopeField:
                 mag = min(0.2 + abs(self.f(c,r))/10, 0.8) if self.vector else 0.6 
                 theta = math.atan(self.f(c,r)) 
                 dx, dy = mag * math.cos(theta), mag * math.sin(theta) 
-                v = th.Vector(self.surface, self.g, (c-0.5,r), (c-0.5+dx,r+dy), color=(60,60,255))
+                v = th.Vector(self.g, (c-0.5,r), (c-0.5+dx,r+dy), color=(60,60,255))
                 if self.gradient: v.color = self.get_color(self.f(c,r)) 
                 row.append(v) 
             field.append(row) 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     g = th.Grid(surface, (SW/2, SH/2), (40,40), (SW,SH), cColor=(100,100,100))
     
-    s = SlopeField(surface, g, f)
+    s = SlopeField(g, f)
 
     while True: 
         for event in pygame.event.get(): 

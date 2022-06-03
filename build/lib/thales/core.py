@@ -101,9 +101,8 @@ class Grid:
 
 class Point: 
     # the class used to create a simple point object
-    def __init__(self, surface, grid, coords, radius=10, fColor=(0,0,0), oColor=None, oWidth=4): 
+    def __init__(self, grid, coords, radius=10, fColor=(0,0,0), oColor=None, oWidth=4): 
         """
-        surface: the Pygame surface object on which the grid is displayed 
         grid: the Grid object on which the point is plotted 
         coords: an integer tuple, the grid coordinates of the point    
         radius: an integer, the pixel radius of the point  
@@ -113,7 +112,7 @@ class Point:
         oWidth: an integer, the width of the outline if the fill color is used 
         """
 
-        self.surface, self.grid, self.coords = surface, grid, coords 
+        self.grid, self.coords = grid, coords 
         self.radius, self.oColor, self.fColor, self.oWidth = radius, oColor, fColor, oWidth 
         self.dragging = False 
         if (not self.oColor): self.oColor = self.fColor
@@ -127,8 +126,8 @@ class Point:
         self.coords = x, y 
 
     def draw(self): 
-        pygame.draw.circle(self.surface, self.oColor, (self.grid.pixel(self.coords[0], self.coords[1])), self.radius)
-        pygame.draw.circle(self.surface, self.fColor, (self.grid.pixel(self.coords[0], self.coords[1])), self.radius - self.oWidth) 
+        pygame.draw.circle(self.grid.surface, self.oColor, (self.grid.pixel(self.coords[0], self.coords[1])), self.radius)
+        pygame.draw.circle(self.grid.surface, self.fColor, (self.grid.pixel(self.coords[0], self.coords[1])), self.radius - self.oWidth) 
 
     def checkDrag(self, event, drag=False, button=1):
         """
@@ -167,9 +166,8 @@ class Point:
 class Funct: 
     # The class for the creation of standard y = f(x) functions using lambda expressions 
 
-    def __init__(self, surface, grid, f, inp=None, width=6, color=(255,0,0)): 
+    def __init__(self, grid, f, inp=None, width=6, color=(255,0,0)): 
         """
-        surface: the Pygame surface on which the function is plotted 
         grid: the Grid object on which the function is plotted 
         f: the lambda function describing the function relationship 
         inp: an array of input (x) values for the function 
@@ -177,12 +175,12 @@ class Funct:
         color: the color the function is drawn with 
         """
 
-        self.surface, self.grid, self.f, self.inp, self.width, self.color = surface, grid, f, inp, width, color 
+        self.grid, self.f, self.inp, self.width, self.color = grid, f, inp, width, color 
 
         self.points = [] 
         if (inp): 
             for x in inp: 
-                self.points.append(Point(surface, self.grid, (x, self.get(x)), self.width/2, self.color))
+                self.points.append(Point(self.grid, (x, self.get(x)), self.width/2, self.color))
 
     sx = sym.symbols('x') 
 
@@ -200,15 +198,15 @@ class Funct:
         #new_f = copy.deepcopy(self) 
         new_f = sym.lambdify(self.sx, sym.diff(self.f(self.sx), self.sx)) 
         if copy: # switch around? 
-            return Funct(self.surface, self.grid, new_f)
-        return Funct(self.surface, self.grid, new_f, self.inp, self.width, self.color) 
+            return Funct(self.grid, new_f)
+        return Funct(self.grid, new_f, self.inp, self.width, self.color) 
 
     def get_int(self, copy=True): 
         #new_f = copy.deepcopy(self) 
         new_f = sym.lambdify(self.sx, sym.integrate(self.f(self.sx), self.sx))
         if copy: 
-            return Funct(self.surface, self.grid, new_f)
-        return Funct(self.surface, self.grid, new_f, self.inp, self.width, self.color)  
+            return Funct(self.grid, new_f)
+        return Funct(self.grid, new_f, self.inp, self.width, self.color)  
 
     # TODO: Add methods for tangents and zeroes 
 
@@ -222,7 +220,7 @@ class Funct:
     def get_tangent(self, tx, color=(0,150,0)): 
         m = self.get_deriv().get(tx)
         tf = lambda x : m * (x - tx) + self.get(tx)
-        tangent_f = Funct(self.surface, self.grid, tf, color=color)
+        tangent_f = Funct(self.grid, tf, color=color)
         return tangent_f 
             
     def draw(self, inp=None, fast=False, acc=200):
@@ -230,17 +228,16 @@ class Funct:
             for p in self.points: 
                 p.draw() 
         else: 
-            for x in range (int(self.grid.gx(0)*acc), int(self.grid.gx(self.surface.get_width())*acc), 1): 
+            for x in range (int(self.grid.gx(0)*acc), int(self.grid.gx(self.grid.surface.get_width())*acc), 1): 
                 if fast: 
-                    pygame.draw.line(self.surface, self.color, (self.grid.px(x/acc), self.grid.py(self.get(x/acc)) + self.width/2), 
+                    pygame.draw.line(self.grid.surface, self.color, (self.grid.px(x/acc), self.grid.py(self.get(x/acc)) + self.width/2), 
                                                                (self.grid.px(x/acc), self.grid.py(self.get(x/acc)) - self.width/2))
                 else: 
-                    Point(self.surface, self.grid, (x/acc, self.get(x/acc)), self.width/2, self.color).draw() 
+                    Point(self.grid, (x/acc, self.get(x/acc)), self.width/2, self.color).draw() 
 
 class Vector:
-    def __init__(self, surface, grid, c1, c2, width=5, color=(0,0,255)): 
+    def __init__(self, grid, c1, c2, width=5, color=(0,0,255)): 
         """
-        surface: the Pygame surface object on which the grid is plotted 
         grid: the Grid object on which the vector is plotted 
         c1: an integer tuple, the grid coordinates of the starting point 
         c2: an integer tuple, the grid coordinates of the end point 
@@ -250,7 +247,7 @@ class Vector:
 
         # TODO: Add an alternative implementation using c1, m (slope), and mag (magnitude) 
 
-        self.surface, self.grid, self.c1, self.c2 = surface, grid, c1, c2 
+        self.grid, self.c1, self.c2 = grid, c1, c2 
         self.width, self.color = width, color 
 
     def move_start(self, x, y): 
@@ -262,7 +259,7 @@ class Vector:
         self.c2 = (x,y)  
 
     def draw(self): 
-        pygame.draw.line(self.surface, self.color, self.grid.pixel(*self.c1), self.grid.pixel(*self.c2), self.width) 
+        pygame.draw.line(self.grid.surface, self.color, self.grid.pixel(*self.c1), self.grid.pixel(*self.c2), self.width) 
 
 # example program 
 
@@ -277,8 +274,8 @@ if __name__ == '__main__':
 
     g = Grid(surface, (350, 300), (30, 30), (SW, SH), cColor=BLUE)
 
-    f1 = Funct(surface, g, lambda x : x ** 2, color=(0,175,0))
-    pLam = lambda x, y : Point(surface, g, (x, y), oColor=BLACK, fColor=WHITE)
+    f1 = Funct(g, lambda x : x ** 2, color=(0,175,0))
+    pLam = lambda x, y : Point(g, (x, y), oColor=BLACK, fColor=WHITE)
     points = [pLam(-3, f1.get(-3)), pLam(-2, f1.get(-2)), pLam(-1, f1.get(-1)), pLam(0, f1.get(0)), pLam(1, f1.get(1)), pLam(2, f1.get(2)), pLam(3, f1.get(3))]
 
     offset = 0  
@@ -292,8 +289,8 @@ if __name__ == '__main__':
             g.zoom(event) 
 
         offset += 0.4 
-        f2 = Funct(surface, g, lambda x : math.sin(x**2 - offset) + x)
-        f3 = Funct(surface, g, lambda x : math.sin(x**2 - offset) - x)
+        f2 = Funct(g, lambda x : math.sin(x**2 - offset) + x)
+        f3 = Funct(g, lambda x : math.sin(x**2 - offset) - x)
 
         surface.fill(WHITE)
 

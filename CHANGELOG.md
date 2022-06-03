@@ -1,5 +1,9 @@
 # Thales Change Log 
 
+## 0.2.3 
+* Added basic framework for complex plotting
+* Removed Surface objects as an argument for non-Grid classes 
+
 ## 0.2.2
 * *Resolved domain issues for the conics classes* 
 
