@@ -54,7 +54,7 @@ class Complex(complex):
         return Complex(_x.real / self.r(), _x.imag / self.i(), self.g) 
 
     def draw(self, r=10, fColor=(255,255,255), oColor=(255,0,0), oWidth=4): 
-        th.Point(self.g.surface, self.g, self.c(), r, fColor, oColor, oWidth).draw() 
+        th.Point(self.g, self.c(), r, fColor, oColor, oWidth).draw() 
 
 if __name__ == '__main__': 
     SW, SH = 800, 600 
